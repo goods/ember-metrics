@@ -59,7 +59,7 @@ export default BaseAdapter.extend({
 
     for (let key in compactedOptions) {
       const capitalizedKey = capitalize(key);
-      gtmEvent[`event${capitalizedKey}`] = compactedOptions[key];
+      gtmEvent[`${capitalizedKey}`] = compactedOptions[key];
     }
 
     if (canUseDOM) {
