@@ -1,7 +1,7 @@
-import Ember from 'ember';
-import canUseDOM from '../utils/can-use-dom';
-import objectTransforms from '../utils/object-transforms';
-import BaseAdapter from './base';
+import Ember from "ember";
+import canUseDOM from "../utils/can-use-dom";
+import objectTransforms from "../utils/object-transforms";
+import BaseAdapter from "./base";
 
 const {
   assert,
@@ -12,54 +12,58 @@ const {
   String: { capitalize }
 } = Ember;
 const assign = Ember.assign || Ember.merge;
-const {
-  compact
-} = objectTransforms;
+const { compact } = objectTransforms;
 
 export default BaseAdapter.extend({
-  dataLayer: 'dataLayer',
+  dataLayer: "dataLayer",
 
   toStringExtension() {
-    return 'GoogleTagManager';
+    return "GoogleTagManager";
   },
 
   init() {
-    const config = get(this, 'config');
+    const config = get(this, "config");
     const { id, envParams } = config;
-    const dataLayer = getWithDefault(config, 'dataLayer', 'dataLayer');
-    const envParamsString = envParams ? `&${envParams}`: '';
+    const dataLayer = getWithDefault(config, "dataLayer", "dataLayer");
+    const envParamsString = envParams ? `&${envParams}` : "";
 
-    assert(`[ember-metrics] You must pass a valid \`id\` to the ${this.toString()} adapter`, id);
+    assert(
+      `[ember-metrics] You must pass a valid \`id\` to the ${this.toString()} adapter`,
+      id
+    );
 
-    set(this, 'dataLayer', dataLayer);
+    set(this, "dataLayer", dataLayer);
 
     if (canUseDOM) {
       (function(w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({
-          'gtm.start': new Date().getTime(),
-          event: 'gtm.js'
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js"
         });
         var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s),
-            dl = l !== 'dataLayer' ? '&l=' + l : '';
+          j = d.createElement(s),
+          dl = l !== "dataLayer" ? "&l=" + l : "";
         j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl + envParamsString;
+        j.src =
+          "https://www.googletagmanager.com/gtm.js?id=" +
+          i +
+          dl +
+          envParamsString;
         f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', get(this, 'dataLayer'), id);
+      })(window, document, "script", get(this, "dataLayer"), id);
     }
   },
 
   trackEvent(options = {}) {
     const compactedOptions = compact(options);
-    const dataLayer = get(this, 'dataLayer');
-    const gtmEvent = {'event': compactedOptions['event']};
+    const dataLayer = get(this, "dataLayer");
+    const gtmEvent = { event: compactedOptions["event"] };
 
-    delete compactedOptions['event'];
+    delete compactedOptions["event"];
 
     for (let key in compactedOptions) {
-      const capitalizedKey = capitalize(key);
-      gtmEvent[`${capitalizedKey}`] = compactedOptions[key];
+      gtmEvent[`${key}`] = compactedOptions[key];
     }
 
     if (canUseDOM) {
@@ -71,9 +75,9 @@ export default BaseAdapter.extend({
 
   trackPage(options = {}) {
     const compactedOptions = compact(options);
-    const dataLayer = get(this, 'dataLayer');
+    const dataLayer = get(this, "dataLayer");
     const sendEvent = {
-      event: compactedOptions['event'] || 'pageview'
+      event: compactedOptions["event"] || "pageview"
     };
 
     const pageEvent = assign(sendEvent, compactedOptions);
