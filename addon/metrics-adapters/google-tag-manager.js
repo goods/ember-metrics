@@ -46,23 +46,18 @@ export default class GoogleTagManager extends BaseAdapter {
     const compactedOptions = compact(options);
     const dataLayer = this.dataLayer;
     const gtmEvent = { event: compactedOptions['event'] };
+    const eventKeys = ['category', 'action', 'label', 'value'];
 
-    deprecate(
-      'Future versions of the GoogleTagManagerAdapter will no longer prefix top-level dataLayer keys with `event`. If you wish to retain this behaviour you will need to override the adapter and prefix the keys yourself.',
-      false,
-      {
-        id: 'ember-metrics.issue-438',
-        for: 'ember-metrics',
-        since: '1.5.0',
-        until: '2.0.0',
-      }
-    );
 
     delete compactedOptions['event'];
 
     for (let key in compactedOptions) {
-      const capitalizedKey = capitalize(key);
-      gtmEvent[`event${capitalizedKey}`] = compactedOptions[key];
+      if (eventKeys.includes(key)) {
+        const capitalizedKey = capitalize(key);
+        gtmEvent[`event${capitalizedKey}`] = compactedOptions[key];
+      } else {
+        gtmEvent[key] = compactedOptions[key];
+      }
     }
 
     window[dataLayer].push(gtmEvent);
